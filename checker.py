@@ -1,6 +1,5 @@
-"""
-TUI Price Checker — uruchamiany przez GitHub Actions co godzinę.
-Czyta oferty z Firestore, sprawdza ceny przez TUI API,
+""" Price Checker — uruchamiany przez GitHub Actions co godzinę.
+Czyta oferty z Firestore, sprawdza ceny przez  API,
 zapisuje historię i wysyła maila przy zmianie.
 """
 
@@ -153,7 +152,7 @@ def build_email_html(changes, cfg):
         </tr>"""
     return f"""
     <html><body style="font-family:Arial,sans-serif;color:#222;max-width:700px;margin:auto">
-      <h2 style="color:#1B115C">🏖️ TUI — zmiana ceny</h2>
+      <h2 style="color:#1B115C">🏖️ Zmiana ceny</h2>
       <p>{datetime.now().strftime('%d.%m.%Y %H:%M')} · {len(changes)} zmian</p>
       <table style="border-collapse:collapse;width:100%;font-size:14px">
         <thead><tr style="background:#1B115C;color:#fff">
