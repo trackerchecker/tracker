@@ -566,7 +566,7 @@ input:focus,select:focus{border-color:var(--tui);box-shadow:0 0 0 3px rgba(27,17
 <!-- Ekran logowania -->
 <div id="loginScreen" style="display:none">
   <div class="login-card">
-    <div class="login-logo">🏖️ TUI Price Tracker</div>
+    <div class="login-logo">🏖️ Price Tracker</div>
     <p class="login-sub">Zaloguj się żeby zarządzać śledzonymi ofertami</p>
     <button class="btn-google" onclick="loginWithGoogle()">
       <svg class="google-icon" viewBox="0 0 24 24">
@@ -583,7 +583,7 @@ input:focus,select:focus{border-color:var(--tui);box-shadow:0 0 0 3px rgba(27,17
 <!-- Główna aplikacja -->
 <div id="appScreen" style="display:none">
   <header>
-    <div class="logo"><div class="logo-dot"></div>TUI Price Tracker</div>
+    <div class="logo"><div class="logo-dot"></div>Price Tracker</div>
     <div class="header-actions">
       <div class="status-pill"><div class="status-dot" id="statusDot"></div><span id="statusText">Ładowanie…</span></div>
       <button class="btn btn-notif btn-sm" onclick="toggleNotifications()" id="notifBtn"><span id="notifIcon">🔔</span> <span id="notifLabel">Powiadomienia</span></button>
@@ -632,7 +632,7 @@ input:focus,select:focus{border-color:var(--tui);box-shadow:0 0 0 3px rgba(27,17
           <div class="card-header"><span class="card-title">Dodaj ofertę</span></div>
           <div class="card-body">
             <div class="field"><label>Nazwa oferty</label><input type="text" id="addName" placeholder="np. Atlantica Beach Resort — 26.09" /></div>
-            <div class="field"><label>Link TUI</label><input type="url" id="addUrl" placeholder="https://www.tui.pl/wypoczynek/…" /></div>
+            <div class="field"><label>Link </label><input type="url" id="addUrl" placeholder="link" /></div>
             <button class="btn btn-primary btn-full" onclick="addOffer()">+ Dodaj i zacznij śledzić</button>
           </div>
         </div>
