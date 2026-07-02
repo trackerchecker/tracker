@@ -2,8 +2,8 @@ name: Sprawdź ceny TUI
 
 on:
   schedule:
-   - cron: "*/30 * * * *"   # co 30 minut 
-  workflow_dispatch:        # możliwość ręcznego uruchomienia z GitHub UI
+    - cron: "0 * * * *"
+  workflow_dispatch:
 
 jobs:
   check:
@@ -17,11 +17,13 @@ jobs:
           python-version: "3.12"
 
       - name: Zainstaluj zależności
-        run: pip install requests curl-cffi firebase-admin
+        run: pip install requests curl-cffi firebase-admin google-auth google-api-python-client
 
       - name: Sprawdź ceny
         env:
-          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
-          GMAIL_USER:           ${{ secrets.GMAIL_USER }}
-          GMAIL_PASSWORD:       ${{ secrets.GMAIL_PASSWORD }}
+          FIREBASE_CREDENTIALS:  ${{ secrets.FIREBASE_CREDENTIALS }}
+          GMAIL_USER:            ${{ secrets.GMAIL_USER }}
+          GMAIL_REFRESH_TOKEN:   ${{ secrets.GMAIL_REFRESH_TOKEN }}
+          GMAIL_CLIENT_ID:       ${{ secrets.GMAIL_CLIENT_ID }}
+          GMAIL_CLIENT_SECRET:   ${{ secrets.GMAIL_CLIENT_SECRET }}
         run: python checker.py
