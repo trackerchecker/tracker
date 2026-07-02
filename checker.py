@@ -1,16 +1,20 @@
-""" Price Checker — uruchamiany przez GitHub Actions co godzinę.
-Czyta oferty z Firestore, sprawdza ceny przez  API,
+"""
+Price Checker — uruchamiany przez GitHub Actions co godzinę.
+Czyta oferty z Firestore, sprawdza ceny przez TUI API,
 zapisuje historię i wysyła maila przy zmianie.
 """
 
+import base64
 import json
 import logging
 import os
 import re
-import smtplib
 from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
 
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -115,27 +119,37 @@ def fetch_price(url):
 # ── Email ─────────────────────────────────────────────────────────────────────
 
 def send_email(cfg, subject, body_html):
-    gmail_user = os.environ.get("GMAIL_USER") or cfg.get("gmail_user", "")
-    gmail_pass = os.environ.get("GMAIL_PASSWORD") or cfg.get("gmail_password", "")
-    notify     = cfg.get("notify_email") or gmail_user
+    refresh_token  = os.environ.get("GMAIL_REFRESH_TOKEN")
+    client_id      = os.environ.get("GMAIL_CLIENT_ID")
+    client_secret  = os.environ.get("GMAIL_CLIENT_SECRET")
+    gmail_user     = os.environ.get("GMAIL_USER") or cfg.get("gmail_user", "")
+    notify         = cfg.get("notify_email") or gmail_user
 
-    if not gmail_user or not gmail_pass:
-        log.warning("Gmail nie skonfigurowany")
+    if not refresh_token or not client_id or not client_secret:
+        log.warning("Gmail API nie skonfigurowany — brak sekretów")
         return
 
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"]    = gmail_user
-    msg["To"]      = notify
-    msg.attach(MIMEText(body_html, "html", "utf-8"))
-
     try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as s:
-            s.login(gmail_user, gmail_pass)
-            s.sendmail(gmail_user, notify, msg.as_string())
-        log.info("Email wysłany: %s", subject)
+        creds = Credentials(
+            token=None,
+            refresh_token=refresh_token,
+            client_id=client_id,
+            client_secret=client_secret,
+            token_uri="https://oauth2.googleapis.com/token",
+        )
+        service = build("gmail", "v1", credentials=creds)
+
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = subject
+        msg["From"]    = gmail_user
+        msg["To"]      = notify
+        msg.attach(MIMEText(body_html, "html", "utf-8"))
+
+        raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
+        service.users().messages().send(userId="me", body={"raw": raw}).execute()
+        log.info("Email wysłany przez Gmail API: %s", subject)
     except Exception as e:
-        log.error("Błąd emaila: %s", e)
+        log.error("Błąd Gmail API: %s", e)
 
 def build_email_html(changes, cfg):
     rows = ""
@@ -152,7 +166,7 @@ def build_email_html(changes, cfg):
         </tr>"""
     return f"""
     <html><body style="font-family:Arial,sans-serif;color:#222;max-width:700px;margin:auto">
-      <h2 style="color:#1B115C">🏖️ Zmiana ceny</h2>
+      <h2 style="color:#1B115C">🏖️ TUI — zmiana ceny</h2>
       <p>{datetime.now().strftime('%d.%m.%Y %H:%M')} · {len(changes)} zmian</p>
       <table style="border-collapse:collapse;width:100%;font-size:14px">
         <thead><tr style="background:#1B115C;color:#fff">
