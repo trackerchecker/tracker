@@ -2,7 +2,7 @@ name: Sprawdź ceny TUI
 
 on:
   schedule:
-    - cron: "0 * * * *"   # co godzinę
+   - cron: "*/30 * * * *"   # co 30 minut 
   workflow_dispatch:        # możliwość ręcznego uruchomienia z GitHub UI
 
 jobs:
